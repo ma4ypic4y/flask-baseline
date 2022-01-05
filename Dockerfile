@@ -4,4 +4,4 @@ COPY . ./root
 
 WORKDIR /root
 
-RUN pip install -r reuirements.txt
+RUN pip install -r requirements.txt

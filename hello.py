@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify, abort, redirect, url_for, render_template, send_file
 import joblib
 import numpy as np
+
+
 app = Flask(__name__)
 
 
@@ -69,3 +71,25 @@ def add_message():
 
 
 
+from flask_wtf import FlaskForm
+from wtforms import StringField, FileField
+from wtforms.validators import DataRequired
+
+app.config.update(dict(
+    SECRET_KEY="powerful secretkey",
+    WTF_CSRF_SECRET_KEY="a csrf secret key"
+))
+
+class MyForm(FlaskForm):
+    name = StringField('name', validators=[DataRequired()])
+    file = FileField()
+
+from werkzeug.utils import secure_filename
+import os
+
+@app.route('/submit', methods=('GET', 'POST'))
+def submit():
+    form = MyForm()
+    if form.validate_on_submit():
+        return redirect('/success')
+    return render_template('submit.html', form=form)
