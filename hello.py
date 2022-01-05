@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, abort, redirect, url_for, render_template, send_file
 import joblib
 import numpy as np
 app = Flask(__name__)
@@ -45,6 +45,10 @@ def show_image():
     return '<img src="./static/setosa.jpg" alt="setosa">'
 
 
+@app.route('/badrequest400')
+def bad_request():
+    return abort(400)
+
 # POST query
 @app.route('/iris_post', methods=['POST'])
 def add_message():
@@ -59,7 +63,7 @@ def add_message():
 
         predict = {'class':str(predict[0])}
     except:
-        return 'bad_request'
+        return redirect(url_for('bad_request'))
 
     return jsonify(predict)
 
