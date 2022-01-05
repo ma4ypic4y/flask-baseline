@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 import joblib
 import numpy as np
 app = Flask(__name__)
@@ -43,3 +43,25 @@ def iris(param):
 @app.route('/show_image')
 def show_image():
     return '<img src="./static/setosa.jpg" alt="setosa">'
+
+
+# POST query
+@app.route('/iris_post', methods=['POST'])
+def add_message():
+    try:
+        content = request.get_json()
+        print(content)
+        param = content['flower'].split(',')
+        param = [float(num) for num in param]
+    
+        param = np.array(param).reshape(1, -1)
+        predict = knn.predict(param)
+
+        predict = {'class':str(predict[0])}
+    except:
+        return 'bad_request'
+
+    return jsonify(predict)
+
+
+
