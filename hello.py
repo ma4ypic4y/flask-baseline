@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify, abort, redirect, url_for, render_template, send_file
 import joblib
 import numpy as np
-
+import pandas as pd
+import os
 
 app = Flask(__name__)
 
@@ -91,5 +92,23 @@ import os
 def submit():
     form = MyForm()
     if form.validate_on_submit():
-        return redirect('/success')
+        f = form.file.data
+        filename = form.name.data + '.csv'
+        # f.save(os.path.join(
+        #     filename
+        # ))
+
+        df = pd.read_csv(f,header=None)
+        print(df.head())
+
+        predict = knn.predict(df)
+
+        result = pd.DataFrame(predict)
+        result.to_csv(filename,index=False)
+
+        return send_file(filename,
+                     mimetype='text/csv',
+                     attachment_filename=filename,
+                     as_attachment=True)
+
     return render_template('submit.html', form=form)
